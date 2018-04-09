@@ -3,9 +3,24 @@
 <head>
   <style>
     body { margin: 0 }
+    #credits a {
+      color: #FFF;
+    }
+    #credits {
+      position: absolute;
+      right: 20px;
+      bottom: 20px;
+      font-size: 14px;
+      background: #000;
+      font-family: Consolas, Menlo, Courier, monospace;
+      padding: 5px;
+    }
   </style>
 </head>
 <body>
+<div id="credits">
+  <a href="https://github.com/mrzmyr/canvas-clock" target="_blank">@mrzmyr/canvas-clock</a>
+</div>
 <canvas id="canvas" width="500" height="500"></canvas>
 <script>
   const COLORS = {
@@ -118,6 +133,5 @@
     requestAnimationFrame(draw);
   });
 </script>
-
 </body>
 </html>
