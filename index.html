@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { margin: 0 }
+  </style>
+</head>
+<body>
+<canvas id="canvas" width="500" height="500"></canvas>
+<script>
+  const COLORS = {
+    background: '#000',
+    milliSecond: '#f92672',
+    second: '#a6e22e',
+    minute: '#66d9ef',
+    hour: '#fd971f',
+    milliSecondBackground: '#c30549',
+    secondBackground: '#77a717',
+    minuteBackground: '#16b9d8',
+    hourBackground: '#c56b01'
+  }
+
+  const LINE_WIDTH = 5;
+
+  var onScreenCanvas = document.getElementById("canvas");
+  var onScreenContext = onScreenCanvas.getContext("2d");
+
+  onScreenCanvas.width = window.innerWidth;
+  onScreenCanvas.height = window.innerHeight;
+
+  var tmpWidth = onScreenCanvas.width;
+  var tmpHeight = onScreenCanvas.height;
+
+  onScreenCanvas.width = onScreenCanvas.width * devicePixelRatio;
+  onScreenCanvas.height = onScreenCanvas.height * devicePixelRatio;
+
+  onScreenCanvas.style.width = `${tmpWidth}px`;
+  onScreenCanvas.style.height = `${tmpHeight}px`;
+
+  var width = onScreenCanvas.width;
+  var height = onScreenCanvas.height;
+
+  let offScreenCanvas = createOffscreenCanvas();
+
+  function clear (context) {
+    context.clearRect(0, 0, onScreenCanvas.width, onScreenCanvas.height);
+  }
+
+  function circle(context, x, y, radius, color, lineWidth) {
+    context.beginPath();
+    context.arc(x, y, radius, 0, 2*Math.PI);
+    context.lineWidth = lineWidth || LINE_WIDTH;
+    context.strokeStyle = color;
+    context.stroke();
+  }
+
+  function rect (context, x, y, width, height, color) {
+    context.rect(x, y, width, height);
+    context.fillStyle = color;
+    context.fill();
+  }
+
+  function createOffscreenCanvas() {
+
+    let scalaY = height / 2;
+    let scalaX = width / 2;
+
+    let offScreenCanvas = document.createElement('canvas');
+    offScreenCanvas.width = onScreenCanvas.width;
+    offScreenCanvas.height = onScreenCanvas.height;
+
+    let offScreenContext = offScreenCanvas.getContext('2d');
+
+    for(var i = 1; i <= 100; i++) {
+      circle(offScreenContext, scalaX, scalaY, i * 10, COLORS.milliSecondBackground, 1)
+    }
+
+    for(var i = 1; i <= 60; i++) {
+      circle(offScreenContext, scalaX, scalaY, i * 10, COLORS.secondBackground, 1)
+    }
+
+    for(var i = 1; i <= 60; i++) {
+      circle(offScreenContext, scalaX, scalaY, i * 10, COLORS.minuteBackground, 1)
+    }
+
+    for(var i = 1; i <= 24; i++) {
+      circle(offScreenContext, scalaX, scalaY, i * 10, COLORS.hourBackground, 1)
+    }
+
+    return offScreenCanvas;
+  }
+
+  function draw() {
+    clear(onScreenContext);
+
+    rect(onScreenContext, 0, 0, onScreenCanvas.width, onScreenCanvas.height, COLORS.background);
+
+    onScreenContext.drawImage(offScreenCanvas, 0, 0);
+
+    let scalaY = height / 2;
+    let scalaX = width / 2;
+
+    var now = new Date();
+    var hour = now.getHours();
+    var minute = now.getMinutes();
+    var second = now.getSeconds();
+    var milliSecond = now.getMilliseconds() / 10;
+
+    circle(onScreenContext, scalaX, scalaY, milliSecond * 10, COLORS.milliSecond);
+    circle(onScreenContext, scalaX, scalaY, second * 10, COLORS.second);
+    circle(onScreenContext, scalaX, scalaY, minute * 10, COLORS.minute);
+    circle(onScreenContext, scalaX, scalaY, hour * 10, COLORS.hour);
+
+    requestAnimationFrame(draw);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    requestAnimationFrame(draw);
+  });
+</script>
+
+</body>
+</html>
